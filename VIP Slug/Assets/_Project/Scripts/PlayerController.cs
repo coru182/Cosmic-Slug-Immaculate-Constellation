@@ -82,7 +82,6 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Vector2 velocity = rb.linearVelocity;
-        Vector2 velocity = rb.velocity;
         bool isGrounded = IsGrounded();
         bool isPressingIntoWall = IsPressingIntoWall();
         bool jumpExecutedThisFrame = false;
@@ -109,6 +108,15 @@ public class PlayerController : MonoBehaviour
         {
             velocity.y *= jumpReleaseVelocityMultiplier;
         }
+		
+		// Prevent "corner climbing": when airborne and pressing into a wall/corner, don't allow contact resolution
+		// to push the capsule upward unless a jump was executed this frame.
+		if (!isGrounded && isPressingIntoWall && velocity.y > 0f && !jumpExecutedThisFrame)
+		{
+			velocity.y = 0f;
+		}
+
+		rb.linearVelocity = velocity;
 
         jumpCutRequested = false;
     }
