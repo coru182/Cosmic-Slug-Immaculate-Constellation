@@ -21,6 +21,9 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private LayerMask groundLayers = ~0;
 
+    [Tooltip("Small downward cast distance used to verify grounded state from below and avoid wall/corner contacts.")]
+    [SerializeField, Min(0.001f)] private float groundCheckDistance = 0.05f;
+
     private Rigidbody2D rb;
     private Collider2D col;
     private float horizontalInput;
@@ -28,6 +31,12 @@ public class PlayerController : MonoBehaviour
     // Runtime timers for jump responsiveness.
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
+
+    // Input intent collected in Update and consumed in FixedUpdate.
+    private bool jumpCutRequested;
+
+    // Ground check allocations reused each frame.
+    private readonly RaycastHit2D[] groundHits = new RaycastHit2D[4];
 
     private void Awake()
     {
@@ -59,28 +68,54 @@ public class PlayerController : MonoBehaviour
             jumpBufferCounter -= Time.deltaTime;
         }
 
-        // Execute jump when both timing windows overlap.
-        if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
+        // Variable jump height request: applied in FixedUpdate.
+        if (Input.GetButtonUp("Jump"))
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-            jumpBufferCounter = 0f;
-            coyoteTimeCounter = 0f;
-        }
-
-        // Variable jump height: releasing jump early cuts upward velocity for a shorter hop.
-        if (Input.GetButtonUp("Jump") && rb.linearVelocity.y > 0f)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * jumpReleaseVelocityMultiplier);
+            jumpCutRequested = true;
         }
     }
 
     private void FixedUpdate()
     {
-        rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
+        Vector2 velocity = rb.velocity;
+
+        // Horizontal movement affects x only. Vertical motion is left to gravity/jump logic.
+        velocity.x = horizontalInput * moveSpeed;
+
+        // Execute jump when buffered input overlaps coyote-time window.
+        if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
+        {
+            velocity.y = jumpForce;
+            jumpBufferCounter = 0f;
+            coyoteTimeCounter = 0f;
+        }
+
+        // Variable jump height: releasing jump early cuts upward velocity for a shorter hop.
+        if (jumpCutRequested && velocity.y > 0f)
+        {
+            velocity.y *= jumpReleaseVelocityMultiplier;
+        }
+
+        rb.velocity = velocity;
+        jumpCutRequested = false;
     }
 
     private bool IsGrounded()
     {
-        return col.IsTouchingLayers(groundLayers);
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.SetLayerMask(groundLayers);
+        filter.useLayerMask = true;
+        filter.useTriggers = false;
+
+        int hitCount = col.Cast(Vector2.down, filter, groundHits, groundCheckDistance);
+        for (int i = 0; i < hitCount; i++)
+        {
+            if (groundHits[i].normal.y > 0.1f)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
