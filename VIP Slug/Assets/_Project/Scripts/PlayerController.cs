@@ -77,7 +77,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector2 velocity = rb.velocity;
+        Vector2 velocity = rb.linearVelocity;
 
         // Horizontal movement affects x only. Vertical motion is left to gravity/jump logic.
         velocity.x = horizontalInput * moveSpeed;
@@ -96,7 +96,7 @@ public class PlayerController : MonoBehaviour
             velocity.y *= jumpReleaseVelocityMultiplier;
         }
 
-        rb.velocity = velocity;
+        rb.linearVelocity = velocity;
         jumpCutRequested = false;
     }
 
