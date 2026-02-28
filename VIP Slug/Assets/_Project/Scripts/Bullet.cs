@@ -35,11 +35,11 @@ public class Bullet : MonoBehaviour
         rb.linearVelocity = moveDirection * speed;
     }
 
-    public void SetDirection(Vector2 direction)
+    public void SetDirection(Vector2 dir)
     {
-        if (direction.sqrMagnitude > 0f)
+        if (dir.sqrMagnitude > 0f)
         {
-            moveDirection = direction.normalized;
+            moveDirection = dir.normalized;
         }
     }
 
