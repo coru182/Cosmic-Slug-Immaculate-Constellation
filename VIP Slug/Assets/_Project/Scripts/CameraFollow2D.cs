@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.U2D;
 
 [RequireComponent(typeof(Camera))]
 public class CameraFollow2D : MonoBehaviour
@@ -8,12 +9,16 @@ public class CameraFollow2D : MonoBehaviour
     [SerializeField, Min(0f)] private float followSpeed = 5f;
     [SerializeField] private Vector2 offset;
     [SerializeField] private bool useFixedUpdate = true;
+    [SerializeField] private bool snapToPixelGrid;
+    [SerializeField, Min(1)] private int fallbackPixelsPerUnit = 16;
 
     private Camera cam;
+    private PixelPerfectCamera pixelPerfectCamera;
 
     private void Awake()
     {
         cam = GetComponent<Camera>();
+        pixelPerfectCamera = GetComponent<PixelPerfectCamera>();
         AutoAssignReferences();
     }
 
@@ -76,6 +81,33 @@ public class CameraFollow2D : MonoBehaviour
         else
         {
             smoothedPosition.y = Mathf.Clamp(smoothedPosition.y, minY, maxY);
+        }
+
+        if (snapToPixelGrid)
+        {
+            int pixelsPerUnit = pixelPerfectCamera != null ? pixelPerfectCamera.assetsPPU : fallbackPixelsPerUnit;
+            float unitsPerPixel = 1f / Mathf.Max(1, pixelsPerUnit);
+
+            smoothedPosition.x = Mathf.Round(smoothedPosition.x / unitsPerPixel) * unitsPerPixel;
+            smoothedPosition.y = Mathf.Round(smoothedPosition.y / unitsPerPixel) * unitsPerPixel;
+
+            if (minX > maxX)
+            {
+                smoothedPosition.x = bounds.center.x;
+            }
+            else
+            {
+                smoothedPosition.x = Mathf.Clamp(smoothedPosition.x, minX, maxX);
+            }
+
+            if (minY > maxY)
+            {
+                smoothedPosition.y = bounds.center.y;
+            }
+            else
+            {
+                smoothedPosition.y = Mathf.Clamp(smoothedPosition.y, minY, maxY);
+            }
         }
 
         transform.position = new Vector3(smoothedPosition.x, smoothedPosition.y, transform.position.z);
