@@ -6,6 +6,7 @@ public class Bullet : MonoBehaviour
 {
     [SerializeField] private float speed = 14f;
     [SerializeField] private float lifetime = 2f;
+    [SerializeField] private LayerMask hitLayers;
 
     private Rigidbody2D rb;
     private Vector2 moveDirection = Vector2.right;
@@ -46,6 +47,9 @@ public class Bullet : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("Bullet hit: " + other.name);
-		Destroy(gameObject);
+        if (((1 << other.gameObject.layer) & hitLayers.value) != 0)
+        {
+            Destroy(gameObject);
+        }
     }
 }
