@@ -21,8 +21,11 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private LayerMask groundLayers = ~0;
 
-    [Tooltip("Small downward cast distance used to verify grounded state from below and avoid wall/corner contacts.")]
-    [SerializeField, Min(0.001f)] private float groundCheckDistance = 0.05f;
+    [Tooltip("Size of the box used to check for ground under the player.")]
+    [SerializeField] private Vector2 groundCheckSize = new Vector2(0.8f, 0.2f);
+
+    [Tooltip("Offset from the player's collider center to place the ground check box.")]
+    [SerializeField] private Vector2 groundCheckOffset = new Vector2(0f, -0.6f);
 
     [Tooltip("Small horizontal cast distance used to detect walls while moving left/right.")]
     [SerializeField, Min(0.001f)] private float wallCheckDistance = 0.05f;
@@ -39,7 +42,7 @@ public class PlayerController : MonoBehaviour
     private bool jumpCutRequested;
 
     // Cast allocations reused each frame to avoid GC spikes.
-    private readonly RaycastHit2D[] groundHits = new RaycastHit2D[4];
+    private readonly Collider2D[] groundOverlaps = new Collider2D[4];
     private readonly RaycastHit2D[] wallHits = new RaycastHit2D[4];
 
     private void Awake()
@@ -108,30 +111,28 @@ public class PlayerController : MonoBehaviour
         {
             velocity.y *= jumpReleaseVelocityMultiplier;
         }
-		
-		// Prevent "corner climbing": when airborne and pressing into a wall/corner, don't allow contact resolution
-		// to push the capsule upward unless a jump was executed this frame.
-		if (!isGrounded && isPressingIntoWall && velocity.y > 0f && !jumpExecutedThisFrame)
-		{
-			velocity.y = 0f;
-		}
 
-		rb.linearVelocity = velocity;
+        // Prevent "corner climbing": when airborne and pressing into a wall/corner, don't allow contact resolution
+        // to push the capsule upward unless a jump was executed this frame.
+        if (!isGrounded && isPressingIntoWall && velocity.y > 0f && !jumpExecutedThisFrame)
+        {
+            velocity.y = 0f;
+        }
+
+        rb.linearVelocity = velocity;
 
         jumpCutRequested = false;
     }
 
     private bool IsGrounded()
     {
-        ContactFilter2D filter = new ContactFilter2D();
-        filter.SetLayerMask(groundLayers);
-        filter.useLayerMask = true;
-        filter.useTriggers = false;
+        Vector2 checkCenter = (Vector2)col.bounds.center + groundCheckOffset;
+        int hitCount = Physics2D.OverlapBoxNonAlloc(checkCenter, groundCheckSize, 0f, groundOverlaps, groundLayers);
 
-        int hitCount = col.Cast(Vector2.down, filter, groundHits, groundCheckDistance);
         for (int i = 0; i < hitCount; i++)
         {
-            if (groundHits[i].normal.y > 0.1f)
+            Collider2D hit = groundOverlaps[i];
+            if (hit != null && hit != col)
             {
                 return true;
             }
