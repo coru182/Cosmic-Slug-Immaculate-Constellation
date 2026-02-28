@@ -282,8 +282,8 @@ Transform:
   m_GameObject: {fileID: 1034457984}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3, y: -1, z: 0}
-  m_LocalScale: {x: 4, y: 1, z: 1}
+  m_LocalPosition: {x: 3, y: -0.453, z: 0}
+  m_LocalScale: {x: 4, y: 2.094, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -300,6 +300,7 @@ GameObject:
   - component: {fileID: 1068697318}
   - component: {fileID: 1068697317}
   - component: {fileID: 1068697316}
+  - component: {fileID: 1068697320}
   m_Layer: 9
   m_Name: EnemyDummy
   m_TagString: Untagged
@@ -454,6 +455,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1068697320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1068697315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7ac8f3940c7448d830b68b214c442a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDummy
+  maxHealth: 3
+  hitFlashDuration: 0.08
 --- !u!1 &1566291596
 GameObject:
   m_ObjectHideFlags: 0
@@ -607,7 +622,7 @@ Transform:
   m_GameObject: {fileID: 1566291596}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -34.28, y: 0.22, z: 0}
   m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
