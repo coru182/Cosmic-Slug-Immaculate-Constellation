@@ -40,6 +40,9 @@ public class PlayerController : MonoBehaviour
     private Collider2D col;
     private Animator animator;
     private float horizontalInput;
+    private bool hasSpeedParameter;
+    private bool hasGroundedParameter;
+    private bool animatorDebugLogged;
 
     // Runtime timers for jump responsiveness.
     private float coyoteTimeCounter;
@@ -56,11 +59,16 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
-        animator = GetComponentInChildren<Animator>();
+        animator = GetComponentInChildren<Animator>(true);
         if (animator == null)
         {
             animator = GetComponent<Animator>();
         }
+    }
+
+    private void Start()
+    {
+        LogAnimatorDebugInfoOnce();
     }
 
     private void Update()
@@ -97,6 +105,42 @@ public class PlayerController : MonoBehaviour
 	{
 		jumpCutRequested = true;
 	}
+    }
+
+    private void LogAnimatorDebugInfoOnce()
+    {
+        if (animatorDebugLogged)
+        {
+            return;
+        }
+
+        animatorDebugLogged = true;
+
+        if (animator == null)
+        {
+            Debug.Log("[PlayerController] Animator GameObject: NULL | Controller: NULL | Has Speed: False | Has Grounded: False", this);
+            return;
+        }
+
+        AnimatorControllerParameter[] parameters = animator.parameters;
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            string parameterName = parameters[i].name;
+            if (parameterName == "Speed")
+            {
+                hasSpeedParameter = true;
+            }
+            else if (parameterName == "Grounded")
+            {
+                hasGroundedParameter = true;
+            }
+        }
+
+        string controllerName = animator.runtimeAnimatorController != null
+            ? animator.runtimeAnimatorController.name
+            : "NULL";
+
+        Debug.Log($"[PlayerController] Animator GameObject: {animator.gameObject.name} | Controller: {controllerName} | Has Speed: {hasSpeedParameter} | Has Grounded: {hasGroundedParameter}", this);
     }
 
     private void FixedUpdate()
