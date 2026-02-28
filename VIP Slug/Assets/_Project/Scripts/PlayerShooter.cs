@@ -7,20 +7,15 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField] private float fireCooldown = 0.15f;
 
     private float cooldownTimer;
-    private int facingDirection = 1;
+    private PlayerVisual playerVisual;
+
+    private void Awake()
+    {
+        playerVisual = GetComponent<PlayerVisual>();
+    }
 
     private void Update()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        if (horizontal > 0f)
-        {
-            facingDirection = 1;
-        }
-        else if (horizontal < 0f)
-        {
-            facingDirection = -1;
-        }
-
         if (cooldownTimer > 0f)
         {
             cooldownTimer -= Time.deltaTime;
@@ -39,6 +34,7 @@ public class PlayerShooter : MonoBehaviour
             return;
         }
 
+        int facingDirection = playerVisual != null ? playerVisual.Facing : 1;
         Bullet bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
         bullet.SetDirection(new Vector2(facingDirection, 0f));
         cooldownTimer = fireCooldown;
