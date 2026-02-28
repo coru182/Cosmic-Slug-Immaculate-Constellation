@@ -179,8 +179,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 861889178}
   - {fileID: 958131855}
+  - {fileID: 861889178}
   m_Father: {fileID: 1566291600}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &958131854
@@ -733,6 +733,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerShooter
   firePoint: {fileID: 861889178}
   bulletPrefab: {fileID: 6855214009138056225, guid: 7eb1d94527d5c694f85234567f31ee0a, type: 3}
+  muzzleFlashPrefab: {fileID: -7192691333470213220, guid: 620842a904cf89c43ae53461b00ea303, type: 3}
   fireCooldown: 0.15
 --- !u!114 &1566291603
 MonoBehaviour:
