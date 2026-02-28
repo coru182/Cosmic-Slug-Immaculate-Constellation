@@ -435,6 +435,9 @@ MonoBehaviour:
   groundLayers:
     serializedVersion: 2
     m_Bits: 4294967295
+  groundCheckSize: {x: 0.7, y: 0.15}
+  groundCheckOffset: {x: 0, y: -1.05}
+  wallCheckDistance: 0.05
 --- !u!1 &1810737474
 GameObject:
   m_ObjectHideFlags: 0
