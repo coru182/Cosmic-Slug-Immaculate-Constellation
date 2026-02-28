@@ -7,6 +7,7 @@ public class CameraFollow2D : MonoBehaviour
     [SerializeField] private BoxCollider2D levelBounds;
     [SerializeField, Min(0f)] private float followSpeed = 5f;
     [SerializeField] private Vector2 offset;
+    [SerializeField] private bool useFixedUpdate = true;
 
     private Camera cam;
 
@@ -18,6 +19,26 @@ public class CameraFollow2D : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (useFixedUpdate)
+        {
+            return;
+        }
+
+        FollowCamera(Time.deltaTime);
+    }
+
+    private void FixedUpdate()
+    {
+        if (!useFixedUpdate)
+        {
+            return;
+        }
+
+        FollowCamera(Time.fixedDeltaTime);
+    }
+
+    private void FollowCamera(float deltaTime)
+    {
         AutoAssignReferences();
 
         if (player == null || levelBounds == null || cam == null)
@@ -27,7 +48,7 @@ public class CameraFollow2D : MonoBehaviour
 
         Vector2 targetPosition = (Vector2)player.position + offset;
         Vector2 currentPosition = transform.position;
-        float t = 1f - Mathf.Exp(-followSpeed * Time.deltaTime);
+        float t = 1f - Mathf.Exp(-followSpeed * deltaTime);
         Vector2 smoothedPosition = Vector2.Lerp(currentPosition, targetPosition, t);
 
         Bounds bounds = levelBounds.bounds;
