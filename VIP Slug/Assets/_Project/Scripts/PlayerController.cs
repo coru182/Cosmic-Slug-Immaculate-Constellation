@@ -60,32 +60,30 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
+		// Coyote time: refresh while grounded, count down while airborne.
+	if (IsGrounded())
+	{
+		coyoteTimeCounter = coyoteTime;
+	}
+	else
+	{
+		coyoteTimeCounter = Mathf.Max(0f, coyoteTimeCounter - Time.deltaTime);
+	}
+        // Jump buffer using Space directly (bypasses Input Manager issues)
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			jumpBufferCounter = jumpBufferTime;
+		}
+		else
+		{
+			jumpBufferCounter = Mathf.Max(0f, jumpBufferCounter - Time.deltaTime);
+	}
 
-        // Coyote time: refresh while grounded, count down while airborne.
-        if (IsGrounded())
-        {
-            coyoteTimeCounter = coyoteTime;
-        }
-        else
-        {
-            coyoteTimeCounter -= Time.deltaTime;
-        }
-
-        // Jump buffer: remember jump press briefly to allow cleaner land-then-jump timing.
-        if (Input.GetButtonDown("Jump"))
-        {
-            jumpBufferCounter = jumpBufferTime;
-        }
-        else
-        {
-            jumpBufferCounter -= Time.deltaTime;
-        }
-
-        // Variable jump height request: applied in FixedUpdate.
-        if (Input.GetButtonUp("Jump"))
-        {
-            jumpCutRequested = true;
-        }
+		// Variable jump height (release Space early for shorter hop)
+		if (Input.GetKeyUp(KeyCode.Space))
+	{
+		jumpCutRequested = true;
+	}
     }
 
     private void FixedUpdate()
@@ -182,4 +180,12 @@ public class PlayerController : MonoBehaviour
 
         return false;
     }
+	
+	private void OnDrawGizmosSelected()
+	{
+		if (!TryGetComponent<Collider2D>(out var c)) return;
+		Vector2 center = (Vector2)c.bounds.center + groundCheckOffset;
+		Gizmos.color = Color.yellow;
+		Gizmos.DrawWireCube(center, groundCheckSize);
+	}
 }

@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 1034457987}
   - component: {fileID: 1034457986}
   - component: {fileID: 1034457985}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -434,9 +434,9 @@ MonoBehaviour:
   jumpReleaseVelocityMultiplier: 0.5
   groundLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
-  groundCheckSize: {x: 0.7, y: 0.15}
-  groundCheckOffset: {x: 0, y: -1.05}
+    m_Bits: 8
+  groundCheckSize: {x: 0.6, y: 0.12}
+  groundCheckOffset: {x: 0, y: -0.95}
   wallCheckDistance: 0.05
   maxFallSpeedWhenWallSliding: 3
   cornerClimbUpwardClampThreshold: 0.5
@@ -529,7 +529,7 @@ GameObject:
   - component: {fileID: 1810737477}
   - component: {fileID: 1810737476}
   - component: {fileID: 1810737475}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -836,6 +836,8 @@ MonoBehaviour:
   followSpeed: 5
   offset: {x: 0, y: 0}
   useFixedUpdate: 1
+  snapToPixelGrid: 0
+  fallbackPixelsPerUnit: 16
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
