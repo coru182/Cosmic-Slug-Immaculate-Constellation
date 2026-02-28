@@ -4,6 +4,7 @@ public class PlayerShooter : MonoBehaviour
 {
     [SerializeField] private Transform firePoint;
     [SerializeField] private Bullet bulletPrefab;
+    [SerializeField] private MuzzleFlash muzzleFlashPrefab;
     [SerializeField] private float fireCooldown = 0.15f;
 
     private float cooldownTimer;
@@ -37,6 +38,12 @@ public class PlayerShooter : MonoBehaviour
         int facingDirection = playerVisual != null ? playerVisual.Facing : 1;
         Bullet bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
         bullet.SetDirection(new Vector2(facingDirection, 0f));
+
+        if (muzzleFlashPrefab != null)
+        {
+            Instantiate(muzzleFlashPrefab, firePoint.position, Quaternion.identity);
+        }
+
         cooldownTimer = fireCooldown;
     }
 }
