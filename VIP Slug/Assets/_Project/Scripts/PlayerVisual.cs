@@ -3,7 +3,6 @@ using UnityEngine;
 public class PlayerVisual : MonoBehaviour
 {
     [SerializeField] private Transform visualRoot;
-    [SerializeField] private Transform firePoint;
 
     public int Facing { get; private set; } = 1;
 
@@ -29,13 +28,6 @@ public class PlayerVisual : MonoBehaviour
             Vector3 scale = visualRoot.localScale;
             scale.x = Mathf.Abs(scale.x) * Facing;
             visualRoot.localScale = scale;
-        }
-
-        if (firePoint != null)
-        {
-            Vector3 localPosition = firePoint.localPosition;
-            localPosition.x = Mathf.Abs(localPosition.x) * Facing;
-            firePoint.localPosition = localPosition;
         }
     }
 }
