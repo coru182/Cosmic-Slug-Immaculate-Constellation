@@ -128,7 +128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 861889178}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -302,7 +302,7 @@ GameObject:
   - component: {fileID: 1566291597}
   - component: {fileID: 1566291601}
   - component: {fileID: 1566291602}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -486,7 +486,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerShooter
   firePoint: {fileID: 861889178}
-  bulletPrefab: {fileID: 0}
+  bulletPrefab: {fileID: 6855214009138056225, guid: 7eb1d94527d5c694f85234567f31ee0a, type: 3}
   fireCooldown: 0.15
 --- !u!1 &1620836679
 GameObject:
@@ -498,7 +498,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1620836681}
   - component: {fileID: 1620836680}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: LevelBounds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
