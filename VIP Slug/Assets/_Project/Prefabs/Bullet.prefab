@@ -171,3 +171,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
   speed: 14
   lifetime: 2
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 520
