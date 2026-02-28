@@ -10,15 +10,22 @@ public class PlayerShooter : MonoBehaviour
     private float cooldownTimer;
     private PlayerVisual playerVisual;
     private Animator animator;
+    private bool hasShootParameter;
+    private bool animatorDebugLogged;
 
     private void Awake()
     {
         playerVisual = GetComponent<PlayerVisual>();
-        animator = GetComponentInChildren<Animator>();
+        animator = GetComponentInChildren<Animator>(true);
         if (animator == null)
         {
             animator = GetComponent<Animator>();
         }
+    }
+
+    private void Start()
+    {
+        LogAnimatorDebugInfoOnce();
     }
 
     private void Update()
@@ -45,7 +52,7 @@ public class PlayerShooter : MonoBehaviour
         Bullet bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
         bullet.SetDirection(new Vector2(facingDirection, 0f));
 
-        if (animator != null)
+        if (animator != null && hasShootParameter)
         {
             animator.SetTrigger("Shoot");
         }
@@ -56,5 +63,30 @@ public class PlayerShooter : MonoBehaviour
         }
 
         cooldownTimer = fireCooldown;
+    }
+
+    private void LogAnimatorDebugInfoOnce()
+    {
+        if (animatorDebugLogged)
+        {
+            return;
+        }
+
+        animatorDebugLogged = true;
+
+        if (animator != null)
+        {
+            AnimatorControllerParameter[] parameters = animator.parameters;
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (parameters[i].name == "Shoot")
+                {
+                    hasShootParameter = true;
+                    break;
+                }
+            }
+        }
+
+        Debug.Log($"[PlayerShooter] Has Shoot parameter: {hasShootParameter}", this);
     }
 }
