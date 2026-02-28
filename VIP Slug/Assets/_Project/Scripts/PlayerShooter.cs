@@ -9,10 +9,16 @@ public class PlayerShooter : MonoBehaviour
 
     private float cooldownTimer;
     private PlayerVisual playerVisual;
+    private Animator animator;
 
     private void Awake()
     {
         playerVisual = GetComponent<PlayerVisual>();
+        animator = GetComponentInChildren<Animator>();
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
     }
 
     private void Update()
@@ -38,6 +44,11 @@ public class PlayerShooter : MonoBehaviour
         int facingDirection = playerVisual != null ? playerVisual.Facing : 1;
         Bullet bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
         bullet.SetDirection(new Vector2(facingDirection, 0f));
+
+        if (animator != null)
+        {
+            animator.SetTrigger("Shoot");
+        }
 
         if (muzzleFlashPrefab != null)
         {
