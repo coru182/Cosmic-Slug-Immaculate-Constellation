@@ -40,9 +40,6 @@ public class PlayerController : MonoBehaviour
     private Collider2D col;
     private Animator animator;
     private float horizontalInput;
-    private bool hasSpeedParameter;
-    private bool hasGroundedParameter;
-    private bool animatorDebugLogged;
 
     // Runtime timers for jump responsiveness.
     private float coyoteTimeCounter;
@@ -62,11 +59,6 @@ public class PlayerController : MonoBehaviour
         animator = GetComponentInChildren<Animator>(true);
     }
 
-    private void Start()
-    {
-        LogAnimatorDebugInfoOnce();
-    }
-
     private void Update()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -77,66 +69,30 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("Grounded", IsGrounded());
         }
 
-		// Coyote time: refresh while grounded, count down while airborne.
-	if (IsGrounded())
-	{
-		coyoteTimeCounter = coyoteTime;
-	}
-	else
-	{
-		coyoteTimeCounter = Mathf.Max(0f, coyoteTimeCounter - Time.deltaTime);
-	}
+        // Coyote time: refresh while grounded, count down while airborne.
+        if (IsGrounded())
+        {
+            coyoteTimeCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteTimeCounter = Mathf.Max(0f, coyoteTimeCounter - Time.deltaTime);
+        }
         // Jump buffer using Space directly (bypasses Input Manager issues)
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			jumpBufferCounter = jumpBufferTime;
-		}
-		else
-		{
-			jumpBufferCounter = Mathf.Max(0f, jumpBufferCounter - Time.deltaTime);
-	}
-
-		// Variable jump height (release Space early for shorter hop)
-		if (Input.GetKeyUp(KeyCode.Space))
-	{
-		jumpCutRequested = true;
-	}
-    }
-
-    private void LogAnimatorDebugInfoOnce()
-    {
-        if (animatorDebugLogged)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            return;
+            jumpBufferCounter = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferCounter = Mathf.Max(0f, jumpBufferCounter - Time.deltaTime);
         }
 
-        animatorDebugLogged = true;
-
-        if (animator == null)
+        // Variable jump height (release Space early for shorter hop)
+        if (Input.GetKeyUp(KeyCode.Space))
         {
-            Debug.Log("[PlayerController] Animator GameObject: NULL | Controller: NULL | Has Speed: False | Has Grounded: False", this);
-            return;
+            jumpCutRequested = true;
         }
-
-        AnimatorControllerParameter[] parameters = animator.parameters;
-        for (int i = 0; i < parameters.Length; i++)
-        {
-            string parameterName = parameters[i].name;
-            if (parameterName == "Speed")
-            {
-                hasSpeedParameter = true;
-            }
-            else if (parameterName == "Grounded")
-            {
-                hasGroundedParameter = true;
-            }
-        }
-
-        string controllerName = animator.runtimeAnimatorController != null
-            ? animator.runtimeAnimatorController.name
-            : "NULL";
-
-        Debug.Log($"[PlayerController] Animator GameObject: {animator.gameObject.name} | Controller: {controllerName} | Has Speed: {hasSpeedParameter} | Has Grounded: {hasGroundedParameter}", this);
     }
 
     private void FixedUpdate()
@@ -233,7 +189,7 @@ public class PlayerController : MonoBehaviour
 
         return false;
     }
-	
+
 	private void OnDrawGizmosSelected()
 	{
 		if (!TryGetComponent<Collider2D>(out var c)) return;
