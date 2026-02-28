@@ -30,6 +30,12 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Small horizontal cast distance used to detect walls while moving left/right.")]
     [SerializeField, Min(0.001f)] private float wallCheckDistance = 0.05f;
 
+    [Tooltip("Maximum downward speed while airborne and pressing into a wall. Set <= 0 to disable wall sliding.")]
+    [SerializeField] private float maxFallSpeedWhenWallSliding = 3f;
+
+    [Tooltip("Only upward velocities at or below this value are clamped for corner-climb prevention.")]
+    [SerializeField, Min(0f)] private float cornerClimbUpwardClampThreshold = 0.5f;
+
     private Rigidbody2D rb;
     private Collider2D col;
     private float horizontalInput;
@@ -86,7 +92,11 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 velocity = rb.linearVelocity;
         bool isGrounded = IsGrounded();
-        bool isPressingIntoWall = IsPressingIntoWall();
+        bool hasWallOnLeft;
+        bool hasWallOnRight;
+        DetectWalls(out hasWallOnLeft, out hasWallOnRight);
+
+        bool isPressingIntoWall = (horizontalInput > 0f && hasWallOnRight) || (horizontalInput < 0f && hasWallOnLeft);
         bool jumpExecutedThisFrame = false;
 
         // Horizontal movement remains velocity-based, but wall presses are zeroed out.
@@ -114,9 +124,15 @@ public class PlayerController : MonoBehaviour
 
         // Prevent "corner climbing": when airborne and pressing into a wall/corner, don't allow contact resolution
         // to push the capsule upward unless a jump was executed this frame.
-        if (!isGrounded && isPressingIntoWall && velocity.y > 0f && !jumpExecutedThisFrame)
+        if (!isGrounded && isPressingIntoWall && !jumpExecutedThisFrame && velocity.y > 0f && velocity.y <= cornerClimbUpwardClampThreshold)
         {
             velocity.y = 0f;
+        }
+
+        // Optional wall-slide cap: while airborne and pressing into a wall, limit downward speed for smoother falls.
+        if (!isGrounded && isPressingIntoWall && !jumpExecutedThisFrame && maxFallSpeedWhenWallSliding > 0f)
+        {
+            velocity.y = Mathf.Max(velocity.y, -maxFallSpeedWhenWallSliding);
         }
 
         rb.linearVelocity = velocity;
@@ -141,20 +157,19 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
-    private bool IsPressingIntoWall()
+    private void DetectWalls(out bool hasWallOnLeft, out bool hasWallOnRight)
     {
-        if (Mathf.Abs(horizontalInput) < 0.01f)
-        {
-            return false;
-        }
-
-        Vector2 castDirection = horizontalInput > 0f ? Vector2.right : Vector2.left;
-
         ContactFilter2D filter = new ContactFilter2D();
         filter.SetLayerMask(groundLayers);
         filter.useLayerMask = true;
         filter.useTriggers = false;
 
+        hasWallOnLeft = HasWallHit(Vector2.left, filter);
+        hasWallOnRight = HasWallHit(Vector2.right, filter);
+    }
+
+    private bool HasWallHit(Vector2 castDirection, ContactFilter2D filter)
+    {
         int hitCount = col.Cast(castDirection, filter, wallHits, wallCheckDistance);
         for (int i = 0; i < hitCount; i++)
         {
