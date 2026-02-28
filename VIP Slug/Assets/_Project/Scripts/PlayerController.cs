@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Collider2D col;
+    private Animator animator;
     private float horizontalInput;
 
     // Runtime timers for jump responsiveness.
@@ -55,11 +56,23 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
+        animator = GetComponentInChildren<Animator>();
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
     }
 
     private void Update()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
+
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", Mathf.Abs(horizontalInput));
+            animator.SetBool("Grounded", IsGrounded());
+        }
+
 		// Coyote time: refresh while grounded, count down while airborne.
 	if (IsGrounded())
 	{
