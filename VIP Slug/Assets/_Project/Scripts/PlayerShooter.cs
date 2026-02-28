@@ -17,10 +17,6 @@ public class PlayerShooter : MonoBehaviour
     {
         playerVisual = GetComponent<PlayerVisual>();
         animator = GetComponentInChildren<Animator>(true);
-        if (animator == null)
-        {
-            animator = GetComponent<Animator>();
-        }
     }
 
     private void Start()
@@ -87,6 +83,10 @@ public class PlayerShooter : MonoBehaviour
             }
         }
 
-        Debug.Log($"[PlayerShooter] Has Shoot parameter: {hasShootParameter}", this);
+        string controllerName = animator != null && animator.runtimeAnimatorController != null
+            ? animator.runtimeAnimatorController.name
+            : "NULL";
+
+        Debug.Log($"[PlayerShooter] Controller: {controllerName} | Has Shoot parameter: {hasShootParameter}", this);
     }
 }

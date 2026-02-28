@@ -60,10 +60,6 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
         animator = GetComponentInChildren<Animator>(true);
-        if (animator == null)
-        {
-            animator = GetComponent<Animator>();
-        }
     }
 
     private void Start()
