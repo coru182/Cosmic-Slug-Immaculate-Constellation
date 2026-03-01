@@ -62,7 +62,7 @@ public class PlayerController : MonoBehaviour
         if (animator == null)
         {
             animator = GetComponentInChildren<Animator>(true);
-            Debug.LogWarning("PlayerController animator reference was not assigned. Falling back to GetComponentInChildren<Animator>().", this);
+            Debug.LogWarning($"PlayerController animator reference was not assigned on '{gameObject.name}'. Falling back to GetComponentInChildren<Animator>().", this);
         }
     }
 
