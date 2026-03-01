@@ -6,6 +6,7 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField] private Bullet bulletPrefab;
     [SerializeField] private MuzzleFlash muzzleFlashPrefab;
     [SerializeField] private float fireCooldown = 0.15f;
+    [SerializeField] private Animator animator;
     [SerializeField] private Vector2 firePointForwardLocal = new Vector2(0.8f, 0f);
     [SerializeField] private Vector2 firePointUpLocal = new Vector2(0f, 0.85f);
     [SerializeField] private Vector2 firePointDiagUpLocal = new Vector2(0.65f, 0.6f);
@@ -14,7 +15,6 @@ public class PlayerShooter : MonoBehaviour
 
     private float cooldownTimer;
     private PlayerVisual playerVisual;
-    private Animator animator;
     private Vector2 aimDirection = Vector2.right;
     private bool isAimUp;
     private bool isAimDiagUp;
@@ -22,7 +22,12 @@ public class PlayerShooter : MonoBehaviour
     private void Awake()
     {
         playerVisual = GetComponent<PlayerVisual>();
-        animator = GetComponentInChildren<Animator>(true);
+
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>(true);
+            Debug.LogWarning("PlayerShooter animator reference was not assigned. Falling back to GetComponentInChildren<Animator>().", this);
+        }
     }
 
     private void Update()
