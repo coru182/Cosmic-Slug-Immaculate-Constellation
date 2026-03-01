@@ -10,6 +10,9 @@ public class PlayerController : MonoBehaviour
     [Header("Jump")]
     [SerializeField] private float jumpForce = 8f;
 
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+
     [Tooltip("Allows jumping for a short time after leaving the ground. Typical tuning range: 0.05-0.2 seconds.")]
     [SerializeField, Min(0f)] private float coyoteTime = 0.1f;
 
@@ -38,7 +41,6 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Collider2D col;
-    private Animator animator;
     private float horizontalInput;
 
     // Runtime timers for jump responsiveness.
@@ -56,7 +58,12 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
-        animator = GetComponentInChildren<Animator>(true);
+
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>(true);
+            Debug.LogWarning("PlayerController animator reference was not assigned. Falling back to GetComponentInChildren<Animator>().", this);
+        }
     }
 
     private void Update()
