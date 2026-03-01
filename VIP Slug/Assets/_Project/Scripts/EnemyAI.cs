@@ -17,6 +17,12 @@ public class EnemyAI : MonoBehaviour
 
     private bool movingToB = true;
     private float shootTimer;
+    private float lockedY;
+
+    private void Awake()
+    {
+        lockedY = transform.position.y;
+    }
 
     private void Update()
     {
@@ -73,12 +79,17 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        Vector3 nextPosition = Vector3.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
-        Vector3 moveDelta = nextPosition - transform.position;
+        Vector3 currentPosition = transform.position;
+        Vector3 targetPosition = new Vector3(target.position.x, lockedY, currentPosition.z);
+        Vector3 nextPosition = Vector3.MoveTowards(currentPosition, targetPosition, moveSpeed * Time.deltaTime);
+        nextPosition.y = lockedY;
+
+        Vector3 moveDelta = nextPosition - currentPosition;
         transform.position = nextPosition;
         FaceDirection(moveDelta);
 
-        if ((transform.position - target.position).sqrMagnitude < 0.01f)
+        Vector3 lockedTargetPosition = new Vector3(target.position.x, lockedY, transform.position.z);
+        if ((transform.position - lockedTargetPosition).sqrMagnitude < 0.01f)
         {
             movingToB = !movingToB;
         }
